@@ -28,8 +28,12 @@ var postLinkFn = function(scope, element, attrs, ctrls){
     	prePreNode = preToTransfor && preToTransfor.previousElementSibling;
 
 			// 如果最后一个元素有「md-dirty」的className，移除掉.'md-dirty'通常是换行自动生成的
-			if($(activeNode).hasClass('md-dirty')){
-				$(activeNode).removeClass('md-dirty');
+			if(activeNode.nodeName !== 'OL' 
+				&& activeNode.nodeName !== 'UL' 
+				&& $(activeNode).hasClass('md-dirty')){
+				if(activeNode.firstElementChild.tagName.toLowerCase() !== 'img'){
+					$(activeNode).removeClass('md-dirty');
+				}
 			};
 			
 			// 第一个if主要是处理列表包括有序列表和无序列表。因为prePreNode已经有md-dirty className了
@@ -51,6 +55,7 @@ var postLinkFn = function(scope, element, attrs, ctrls){
 				ctrl.CodeMirror(preToTransfor);
 				var activeElement = getActiveElement();
 				var CodeMirrorLines = activeElement.previousElementSibling.querySelector('textarea');
+				activeElement.previousElementSibling.count = 0;
 				CodeMirrorLines.focus();
 			} 
 			//下面一个if是用来处理除以上情况以外的按下回车，转化格式。
@@ -83,7 +88,24 @@ var postLinkFn = function(scope, element, attrs, ctrls){
 					$(activeNode).removeClass('md-dirty');
 				}
 			};
-
+			
+			if(/^CodeMirror/.test(activeNode.className) && comfirmCodeMirrorEmpty()){
+				console.log(activeNode.count);
+				if(activeNode.hasOwnProperty('count') && activeNode.count == 1){
+					var range, userSelection, focusElement;
+					userSelection = window.getSelection();
+					range = userSelection.createRange? userSelection.createRange(): userSelection.getRangeAt(0);
+					focusElement = activeNode.nextElementSibling.firstChild;
+					range.setStartBefore(focusElement);
+					range.setEndBefore(focusElement);
+					userSelection.removeAllRanges();
+					userSelection.addRange(range);
+					activeNode.parentNode.removeChild(activeNode);
+					activeNode.count = 0;
+				} else if(activeNode.hasOwnProperty('count')) {
+					activeNode.count ++ ;
+				}
+			}
 		};
 		
 	});
@@ -307,8 +329,6 @@ document.addEventListener('drop', function(e){
 				return userSelection.focusOffset + count;
 			}
 
-
-
 			function findCurrentNode(range, element, offset){
 				var count = 0, childNodes = element.childNodes;
 				for(var i = 0; i < childNodes.length; i ++){
@@ -330,6 +350,18 @@ document.addEventListener('drop', function(e){
 			}
 		}
 	});
+/**
+ * [comfirmCodeMirrorEmpty 用于判断CodeMirror是否为空]
+ * @return {[Boolean]} [为空返回true， 不为空返回false]
+ */
+	function comfirmCodeMirrorEmpty(){
+		var activeElement = getActiveElement();
+		var code = activeElement.querySelector('.CodeMirror-code');
+		var codeCounts = code.children.length;
+		var text = code.firstElementChild.querySelector('.CodeMirror-line').textContent;
+		// /\u200b/匹配零宽空格
+		return codeCounts == 1 && /\u200b/.test(text);
+	}
 	/**
 	 * [getActiveElement 用来获取focusNode 所在 contenteditable 的子元素。也就是说activeElement是focusNode
 	 * 或者包含focusNode，并且activeNode是div contenteditable的子元素]
