@@ -1,0 +1,29 @@
+{
+  "name": "realtime-markdown",
+  "description": "a realtime markdown editor",
+  "main": "index.js",
+  "authors": [
+    "ransixi"
+  ],
+  "license": "ISC",
+  "keywords": [
+    "markdown",
+    "angular"
+  ],
+  "moduleType": [],
+  "homepage": "",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular": "~1.4.7",
+    "showdown": "~1.3.0",
+    "bootstrap": "~3.3.5",
+    "jquery": "~2.1.4",
+    "angular-sanitize": "~1.4.7"
+  }
+}
