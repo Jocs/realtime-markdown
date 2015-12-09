@@ -89,25 +89,37 @@ var postLinkFn = function(scope, element, attrs, ctrls){
 		};
 		
 	});
-
+var lastCursorHeight;
 angular.element(element).bind('keydown', function(e){
-		//如果pre是最后一个元素，那么就向pre后面添加一个换行元素。
 		var activeElement = getActiveElement(), userSelection = window.getSelection();
+		if(e.keyCode !== 40 && /^CodeMirror/.test(activeElement.className)) {
+			var lastCursor = activeElement.querySelector('.CodeMirror-cursor');
+			lastCursorHeight = parseInt(lastCursor.style.top) + parseInt(lastCursor.style.height);
+		}
+		//如果现在光标是代码块最后一行，那么当按向下键时，跳到代码块下一行，如果没有下一行，先生成下一行。
+		//再跳到下一行
 		if(e.keyCode === 40 && /^CodeMirror/.test(activeElement.className)){
+			//如果pre是最后一个元素，那么就向pre后面添加一个换行元素。
 			if(!activeElement.nextElementSibling){
 				$(element)[0].appendChild(getBrElement());
 			}
-			if(confirmLastCodeline()){
-				var range, userSelection;
+			var cursor = activeElement.querySelector('.CodeMirror-cursor');
+		  var cursorHeight = parseInt(cursor.style.top) + parseInt(cursor.style.height);
+		  if(cursorHeight == lastCursorHeight) {
+		  	var range;
 				range = userSelection.createRange? userSelection.createRange(): userSelection.getRangeAt(0);
 				range.setStartAfter(activeElement.nextElementSibling.firstChild);
 				range.setEndAfter(activeElement.nextElementSibling.firstChild);
 				userSelection.removeAllRanges();
 				userSelection.addRange(range);
-			}
+		  } else {
+		  	lastCursorHeight = cursorHeight;
+		  }
 		};
 		//按向上方向键，并且previousElement是CodeMirror元素，那么，阻止默认事件发生，并使得CodeMirror获得焦点
-		if(e.keyCode === 38 && /^CodeMirror/.test(activeElement.previousElementSibling.className)){
+		if(e.keyCode === 38 
+			&& activeElement.previousElementSibling
+			&& /^CodeMirror/.test(activeElement.previousElementSibling.className)){
 			e.preventDefault();
 			activeElement.previousElementSibling.querySelector('textarea').focus();
 		}
@@ -320,20 +332,6 @@ document.addEventListener('drop', function(e){
 			}
 		}
 	});
-	/**
-	 * [confirmLastCodeline 用来确定光标是否在代码块的最后一行]
-	 * @return {[Boolean]} [在最后一行返回true,不在最后一行返回false]
-	 */
-	function confirmLastCodeline(){
-		var activeElement = getActiveElement();
-		var codeLines = activeElement.querySelector('.CodeMirror-lines');
-		var codeLinesHeight = codeLines.offsetHeight - 8; // 减8px是因为上下有4像素的padding值。
-		var cursor = activeElement.querySelector('.CodeMirror-cursor');
-		var cursorHeight = parseInt(cursor.style.top) + parseInt(cursor.style.height);
-		console.log(codeLinesHeight)
-		console.log(cursorHeight)
-		return codeLinesHeight === cursorHeight ? true : false;
-	}
 	/**
 	 * [getActiveElement 用来获取focusNode 所在 contenteditable 的子元素。也就是说activeElement是focusNode
 	 * 或者包含focusNode，并且activeNode是div contenteditable的子元素]
