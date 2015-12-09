@@ -46,11 +46,9 @@ var postLinkFn = function(scope, element, attrs, ctrls){
 
 			}  
 			// 下面一个if用来处理代码块的。
-			else if(preToTransfor && /^`{3}/.test(preToTransfor.textContent)
-				&& prePreNode && /^`{3}/.test(prePreNode.textContent) ){
+			else if(preToTransfor && /^`{3}/.test(preToTransfor.textContent)){
 				//将prePreNode替换为CodeMirror文本编辑器，并删除preToTransfor元素
-				ctrl.CodeMirror(prePreNode);
-				$(preToTransfor).remove();
+				ctrl.CodeMirror(preToTransfor);
 				var activeElement = getActiveElement();
 				var CodeMirrorLines = activeElement.previousElementSibling.querySelector('textarea');
 				CodeMirrorLines.focus();
