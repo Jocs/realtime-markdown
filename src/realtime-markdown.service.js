@@ -14,7 +14,7 @@ angular.module('realtime-markdown.service',[])
 	};
 })
 .provider('socket', function(){
-	var url = 'http://localhost:18080';
+	var url = 'http://rtmarkdown.duapp.com/';
 	var socket = io(url);
 	this.$get = function(){
 		return socket;

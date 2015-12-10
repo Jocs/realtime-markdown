@@ -4,7 +4,7 @@
   "description": "a realtime markdown editor",
   "main": "index.js",
   "scripts": {
-    "start": "live-server"
+    "start": "node server.js"
   },
   "keywords": [
     "markdown",
