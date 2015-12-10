@@ -31,9 +31,7 @@ var postLinkFn = function(scope, element, attrs, ctrls){
 			if(activeNode.nodeName !== 'OL' 
 				&& activeNode.nodeName !== 'UL' 
 				&& $(activeNode).hasClass('md-dirty')){
-				if(activeNode.firstElementChild.tagName.toLowerCase() !== 'img'){
 					$(activeNode).removeClass('md-dirty');
-				}
 			};
 			
 			// 第一个if主要是处理列表包括有序列表和无序列表。因为prePreNode已经有md-dirty className了
@@ -54,8 +52,10 @@ var postLinkFn = function(scope, element, attrs, ctrls){
 				//将prePreNode替换为CodeMirror文本编辑器，并删除preToTransfor元素
 				ctrl.CodeMirror(preToTransfor);
 				var activeElement = getActiveElement();
+				var codeMirror = activeElement.previousElementSibling;
 				var CodeMirrorLines = activeElement.previousElementSibling.querySelector('textarea');
-				activeElement.previousElementSibling.count = 0;
+				codeMirror.count = 0;
+				codeMirror.classList.add('md-dirty');
 				CodeMirrorLines.focus();
 			} 
 			//下面一个if是用来处理除以上情况以外的按下回车，转化格式。
@@ -83,7 +83,7 @@ var postLinkFn = function(scope, element, attrs, ctrls){
 			};
 			// 下面一个if主要用来处理按下回车键时，如果新的一行带有md-dirty className,就把md-dirty删除掉。保证了后面
 			// 能够正常转换格式。
-			if(!/\S+/.test(activeNode.textContent)){
+			if(!/\S+/.test(activeNode.textContent) && !activeNode.classList.contains('md-image')){
 				if($(activeNode).hasClass('md-dirty')){
 					$(activeNode).removeClass('md-dirty');
 				}
@@ -171,7 +171,7 @@ document.addEventListener('drop', function(e){
 				var div = document.createElement('div');
 				img.src = url;
 				img.title = file.name.split(/\.(?=png|jpg)/)[0];
-				div.className = 'md-dirty';
+				div.className = 'md-dirty md-image';
 				div.appendChild(img);
 				img.addEventListener('load', function(){
 					if(e.target.hasAttribute('contenteditable')){
@@ -199,7 +199,7 @@ document.addEventListener('drop', function(e){
 					var div = document.createElement('div');
 					img.src = url;
 					img.title = file.name.split(/\.(?=png|jpg)/)[0];
-					div.className = 'md-dirty';
+					div.className = 'md-dirty md-image';
 					div.appendChild(img);
 					img.addEventListener('load', function(){
 						$(element)[0].insertBefore(div, $(element)[0].lastElementChild);

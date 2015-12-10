@@ -5,8 +5,8 @@ var fs = require('fs');
 var express = require('express');
 
 app.use(express.static(__dirname + '/src'));
-server.listen(8080, function(){
-	console.log('server at 8080');
+server.listen(18080, function(){
+	console.log('server at 18080');
 });
 
 app.get('/', function (req, res) {

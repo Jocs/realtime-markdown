@@ -14,7 +14,7 @@ angular.module('realtime-markdown.service',[])
 	};
 })
 .provider('socket', function(){
-	var url = 'http://localhost:8080';
+	var url = 'http://localhost:18080';
 	var socket = io(url);
 	this.$get = function(){
 		return socket;
