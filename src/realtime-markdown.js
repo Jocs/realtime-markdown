@@ -221,7 +221,7 @@ document.addEventListener('drop', function(e){
 			});
 		};
 	});
-	// 发送输入框中的html。
+	// 发送realtime-markdown编辑器中的html文本到服务器。
 	var timer = null;
 	$(element).bind('keyup', function(){
 		if(timer) clearTimeout(timer);
